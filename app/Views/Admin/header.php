@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- index.html  21 Nov 2019 03:44:50 GMT -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="<?=base_url(); ?>public/assets/css/app.min.css">
+    <link rel="stylesheet" href="<?=base_url(); ?>public/assets/css/style.css">
+    <link rel="stylesheet" href="<?=base_url(); ?>public/assets/css/components.css">
+    <link rel="stylesheet" href="<?=base_url(); ?>public/assets/css/custom.css">
+    <link rel='shortcut icon' type='image/x-icon' href="<?=base_url(); ?>public/assets/img/favicon.ico' />
+    <link rel="stylesheet" href="<?=base_url(); ?>public/assets/bundles/datatables/datatables.min.css">
+    <link rel="stylesheet" href="<?=base_url(); ?>public/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+</head>
+<style>
+/* Style for required field labels */
+label.error {
+    color: red;
+}
+
+.flash-success {
+    background-color: #4caf50;
+    /* Green */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Styling for flash error message */
+.toast.toast-error {
+    background-color: #f44336;
+    /* Red */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Positioning for flash error message */
+.toast-top-right {
+    top: 20px;
+    right: 20px;
+    position: fixed;
+    z-index: 9999;
+}
+.main-sidebar .sidebar-menu li a{
+    color: black;
+
+}
+.main-sidebar .sidebar-menu li ul.dropdown-menu li a {
+    color: #e0e0e0;
+}
+.main-sidebar .sidebar-menu li ul.dropdown-menu li a:before{
+    color: #e0e0e0;
+}
+</style>
+
+<body>
+
+    <?php 
+$uri = new \CodeIgniter\HTTP\URI(current_url(true));
+$pages = $uri->getSegments();
+$page = $uri->getSegment(count($pages));
+ 
+// echo "<pre>"; print_r($page);exit();
+
+?>
+    <div id="flash-success-container">
+        <?php if (session()->has('success')) : ?>
+        <div class="flash-success">
+            <?= session('success') ?>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php if (session()->has('error')): ?>
+
+    <div id="toast-container" class="toast-top-right">
+        <div class="toast toast-error" aria-live="assertive" style="">
+            <div class="toast-message">
+                <?= session('error') ?>
+            </div>
+        </div>
+    </div>
+    <?php endif ?>
+    <div class="loader"></div>
+    <div id="app">
+        <div class="main-wrapper main-wrapper-1">
+            <div class="navbar-bg"></div>
+            <nav class="navbar navbar-expand-lg main-navbar sticky">
+                <div class="form-inline mr-auto">
+                    <ul class="navbar-nav mr-3">
+                        <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg
+									collapse-btn"> <i data-feather="align-justify"></i></a></li>
+                        <!-- <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
+                                <i data-feather="maximize"></i>
+                            </a></li>
+                        <li>
+                            <form class="form-inline mr-auto">
+                                <div class="search-element">
+                                    <input class="form-control" type="search" placeholder="Search" aria-label="Search"
+                                        data-width="200">
+                                    <button class="btn" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </li> -->
+                    </ul>
+                </div>
+                <ul class="navbar-nav navbar-right">
+                  
+                    <li class="dropdown"><a href="#" data-toggle="dropdown"
+                            class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image"
+                                src="<?=base_url(); ?>public/assets/img/user.png" class="user-img-radious-style"> <span
+                                class="d-sm-none d-lg-inline-block"></span></a>
+                        <div class="dropdown-menu dropdown-menu-right pullDown">
+                           
+                          
+                            <div class="dropdown-divider"></div>
+                            <a href="<?=base_url(); ?>logout" class="dropdown-item has-icon text-danger"> <i
+                                    class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="main-sidebar sidebar-style-2" style="background: linear-gradient(262deg, rgb(252, 252, 252) 0%, rgb(119 104 209) 100%);">
+            <!-- <div class="main-sidebar sidebar-style-2" style="background-image: url('public/assets/img/image-gallery/background22.jpg'); background-size: cover; background-position: center;"> -->
+
+                <?php 
+      // echo "<pre>";print_r($_SESSION['accesslevel']);exit();
+      if ((!empty($_SESSION))) {
+            
+            ?>
+                <?php 
+                
+                            if (($_SESSION['role']) == 'Admin') { ?>
+                <?php
+                    if (isset($_SESSION['accesslevel'])) {
+                        $access_levels = explode(',', $_SESSION['accesslevel']);
+                    ?>
+                <aside id="sidebar-wrapper">
+                    
+                <div class="sidebar-brand">
+    <?php 
+    // Check if the user's role is 'Admin'
+    if ($_SESSION['role'] == 'Admin') {
+        // Check if 'accesslevel' session variable is set
+        if (isset($_SESSION['accesslevel'])) {
+            // Convert 'accesslevel' string to an array
+            $access_levels = explode(',', $_SESSION['accesslevel']);
+            
+            // Check if 'yourorder' is in the access levels
+            if (in_array('yourorder', $access_levels)) {
+    ?>
+                <!-- Link to 'yourorder' for Admin with 'yourorder' access -->
+                <a href="<?php echo base_url() ?>yourorder"> 
+                    <img alt="image" src="<?= base_url(); ?>public/assets/img/logo.png" class="header-logo" /> 
+                    <span class="logo-name">SrinathWater</span>
+                </a>
+    <?php 
+            } else {
+    ?>
+                <!-- Link to 'AdminDashboard' for Admin without 'yourorder' access -->
+                <a href="<?php echo base_url() ?>AdminDashboard"> 
+                    <img alt="image" src="<?= base_url(); ?>public/assets/img/logo.png" class="header-logo" /> 
+                    <span class="logo-name">SrinathWater</span>
+                </a>
+    <?php 
+            }
+        } else {
+    ?>
+            <!-- Default link to 'AdminDashboard' if 'accesslevel' is not set -->
+            <a href="<?php echo base_url() ?>AdminDashboard"> 
+                <img alt="image" src="<?= base_url(); ?>public/assets/img/logo.png" class="header-logo" /> 
+                <span class="logo-name">DeliveryApp</span>
+            </a>
+    <?php 
+        }
+    }
+    ?>
+</div>
+
+                    <ul class="sidebar-menu">
+                        <!-- <li class="menu-header">Admin Dashboard</li> -->
+
+                        <li class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown" <?php if (in_array('adduser', $access_levels) || in_array('addmenu', $access_levels) || in_array('addorder', $access_levels) || in_array('refilllocation', $access_levels) || in_array('allotdelivery', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>><i data-feather="user"></i><span>User</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="nav-link" href="<?=base_url(); ?>adduser" <?php if (in_array('adduser', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Add User</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>addorder" <?php if (in_array('addorder', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Order Tankers</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>userlist" <?php if (in_array('userlist', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>User List</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>addmenu" <?php if (in_array('addmenu', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Access Level</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>Customerlist" <?php if (in_array('Customerlist', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Customer list</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>allotdelivery" <?php if (in_array('allotdelivery', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Allot Delivery</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>Droplocation" <?php if (in_array('Droplocation', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Water Drop locations</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>refilllocation" <?php if (in_array('Droplocation', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Water reffil locations</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown" <?php if (in_array('Watersupplypoints', $access_levels) || in_array('waterreffilpoint', $access_levels) || in_array('addtankers', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>><i data-feather="layout"></i><span>Masters</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="nav-link" href="<?=base_url(); ?>Watersupplypoints" <?php if (in_array('Watersupplypoints', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Water Supply points</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>waterreffilpoint" <?php if (in_array('waterreffilpoint', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Water refill points</a></li>
+                                                            <li><a class="nav-link" href="<?=base_url(); ?>addtankers" <?php if (in_array('addtankers', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Add Tankers </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown" <?php if (in_array('addCoustmer', $access_levels) || in_array('Feedback', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>><i data-feather="user-check"></i><span>Customer</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="nav-link" href="<?=base_url(); ?>addCoustmer" <?php if (in_array('addCoustmer', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Add Customer</a></li>
+                                <!-- <li><a class="nav-link" href="<?=base_url(); ?>Feedback" <?php if (in_array('Feedback', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Feedback</a></li> -->
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown" <?php if (in_array('Receivedorder', $access_levels) || in_array('orderpayment', $access_levels) || in_array('yourorder', $access_levels)  ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>><i data-feather="map-pin"></i><span>Order
+                                    Status</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="nav-link" href="<?=base_url(); ?>Receivedorder" <?php if (in_array('Receivedorder', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Received Order</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>yourorder" <?php if (in_array('yourorder', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Your Orders</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>orderpayment" <?php if (in_array('orderpayment', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Payment Status</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown" <?php if (in_array('Purchasebill', $access_levels) || in_array('fuelbill', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>><i data-feather="layout"></i><span>Billing</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a class="nav-link" href="<?=base_url(); ?>Purchasebill" <?php if (in_array('Purchasebill', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Water Purchase Bill</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>fuelbill" <?php if (in_array('fuelbill', $access_levels)) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Fual Bill</a></li>
+                               
+                            </ul>
+                        </li>
+                        <!-- <li class="dropdown">
+              <a href="<?=base_url(); ?>" class="nav-link"><i data-feather="monitor"></i>Staff</a>
+            </li> -->
+                        <li class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown" <?php if (in_array('coustmerlisting', $access_levels) || in_array('Orderlist', $access_levels) || in_array('AllExpenses', $access_levels) || in_array('FuelBillreport', $access_levels) || in_array('WaterPurchasereport', $access_levels) || in_array('InvoiceBilling', $access_levels) || in_array('MonthlyIncome', $access_levels) || in_array('Staffdelivery', $access_levels)  ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>><i data-feather="mail"></i><span>Reports</span></a>
+                            <ul class="dropdown-menu">
+                            <li><a class="nav-link" href="<?=base_url(); ?>MonthlyIncome" <?php if (in_array('MonthlyIncome', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Monthly Income</a></li>
+                                                            <li><a class="nav-link" href="<?=base_url(); ?>InvoiceBilling" <?php if (in_array('InvoiceBilling', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Invoice-Billing</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>WaterPurchasereport" <?php if (in_array('WaterPurchasereport', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Water Purchase Reports</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>FuelBillreport" <?php if (in_array('FuelBillreport', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Fuel Bill Reports</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>AllExpenses" <?php if (in_array('AllExpenses', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>All Expenses</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>coustmerlisting" <?php if (in_array('coustmerlisting', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Customer List</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>Orderlist" <?php if (in_array('Orderlist', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Order List</a></li>
+                                <li><a class="nav-link" href="<?=base_url(); ?>Staffdelivery" <?php if (in_array('Staffdelivery', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Delivery Staff</a></li>
+                                                             <li><a class="nav-link" href="<?=base_url(); ?>deliveredorder" <?php if (in_array('deliveredorder', $access_levels) ) {
+                                                                echo "style='display:block'";
+                                                            } else {
+                                                                echo "style='display:none'";
+                                                            } ?>>Delivered Order</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </aside>
+
+                <?php } ?>
+                <?php } ?>
+                <?php } ?>
+
+            </div>
